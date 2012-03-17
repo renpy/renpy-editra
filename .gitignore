@@ -1,0 +1,7 @@
+Editra
+plugin/renpy_editra.egg-info
+.project
+.pydevproject
+.settings
+*.pyc
+
