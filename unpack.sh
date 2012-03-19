@@ -13,3 +13,6 @@ try mv "Editra-$VERSION" "Editra"
 try cd plugin
 export PYTHONPATH=../Editra/plugins/
 try python setup.py develop --install-dir=../Editra/plugins/
+try cd ..
+
+try ln -s ../../RenPy.ess Editra/styles/RenPy.ess

@@ -1,0 +1,152 @@
+default_style {
+        fore:#222222;
+        back:#FFFFFF;
+        face:%(primary)s;
+        size:%(size)d;
+}
+
+margin_style {
+        fore:#FFFFFF;
+        back:#000000;
+}
+
+number2_style {
+}
+
+caret_line {
+        back:#E8F2FE;
+}
+
+comment_style {
+        fore:#600000;
+}
+
+foldmargin_style {
+        back:#D1D1D1;
+}
+
+keyword_style {
+        fore:#804000;
+}
+
+keyword3_style {
+}
+
+guide_style {
+        fore:#838383;
+}
+
+edge_style {
+        fore:#838383;
+}
+
+error_style {
+        fore:#FE5252;
+        face:%(secondary)s;
+        modifiers:bold;
+}
+
+ideol_style {
+}
+
+array_style {
+}
+
+global_style {
+}
+
+line_num {
+        back:#C0C0C0;
+}
+
+pre2_style {
+}
+
+string_style {
+        fore:#006000;
+}
+
+class_style {
+}
+
+ctrl_char {
+        back:#FFFFFF;
+}
+
+marker_style {
+        back:#FFFFFF;
+}
+
+keyword2_style {
+        fore:#004080;
+}
+
+class2_style {
+}
+
+userkw_style {
+}
+
+char_style {
+}
+
+keyword4_style {
+}
+
+unknown_style {
+}
+
+btick_style {
+}
+
+scalar_style {
+}
+
+operator_style {
+}
+
+here_style {
+}
+
+regex_style {
+}
+
+stringeol_style {
+}
+
+decor_style {
+}
+
+scalar2_style {
+}
+
+funct_style {
+}
+
+brace_good {
+        back:#ddffdd;
+        modifiers:bold;
+}
+
+pre_style {
+}
+
+directive_style {
+}
+
+calltip {
+        fore:#404040;
+        back:#FFFFB8;
+}
+
+number_style {
+}
+
+brace_bad {
+        back:#ffdddd;
+        modifiers:bold;
+}
+
+dockey_style {
+}
+
