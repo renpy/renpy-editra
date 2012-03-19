@@ -136,6 +136,13 @@ def StyleText(stc, start, end):
         stc.IndicatorSetForeground(1, "#FF0000")
 
 
+    # A change to one line can change others below it. So we restyle all 
+    # visible text with any change.        
+    vis_end_line = stc.GetLastVisibleLine()
+    vis_end_pos = stc.GetLineEndPosition(vis_end_line)
+    end = max(end, vis_end_pos)
+
+
     # First, figure out the line based on the position.
     line = stc.LineFromPosition(start)
 
@@ -550,7 +557,7 @@ class SyntaxData(syntax.syndata.SyntaxDataBase):
         self.RegisterFeature(syntax.synglob.FEATURE_AUTOINDENT, AutoIndenter)
 
     def GetKeywords(self):
-        return[ ]
+        return [ ]
 
     def GetSyntaxSpec(self):
         return SYNTAX_ITEMS
