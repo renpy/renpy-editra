@@ -130,10 +130,6 @@ def StyleText(stc, start, end):
 
     """
 
-    print
-    print "Styling text", start, end
-    start_time = time.time()
-
     # First, figure out the line based on the position.
     line = stc.LineFromPosition(start)
 
@@ -352,31 +348,171 @@ def StyleText(stc, start, end):
 
     max_line_cache[id(stc)] = line
 
-    print "E", time.time() - start_time
-    print "Style time:", time.time() - start_time, end
-            
 
 def AutoIndenter(stc, current_pos, indent_char):
+    """
+    Determines the indentation rule.
+    
+    1) If all strings and parenthesis are closed, then indent based on how 
+       this line has been styled.
+       
+    2) If we're in a string, indent to one more than the position at 
+       which the string started. 
+       
+    3) If we've opened more parenthesis then we closed on the current
+       line, indent by 1.
+       
+    4) If we've closed more parenthesis than we opened on the current
+       line, dedent by 1.
+       
+    5) Otherwise, keep the current indentation.
+    """
+    
+    
     line = stc.LineFromPosition(current_pos)
-    
+
     while line >= 0:
-        state = stc.GetLineState(line)
+        line_state = stc.GetLineState(line)
     
-        if state:
+        if line_state:
             break
         
         line -= 1
         
-    # Ren'Py will only accept space for indentation, so always indent with
-    # spaces.
+    start = stc.PositionFromLine(line)
+    text = stc.GetTextRangeUTF8(start, current_pos)
     
-    if state & INDENTS:
-        indent = "\n" + " " * ((state & INDENT_MASK) + 4)
+    pos = -1
+    len_text = len(text)
+    
+    # States for the indenting state machine.    
+    ISTATE_INDENT = 0 # Line indentation.
+    ISTATE_CODE = 1 # Normal code.
+    ISTATE_COMMENT = 2 # Comment. 
+    ISTATE_STRING = 3 # In a string.
+    ISTATE_EOL = 4 # At the end of the line.
+        
+    state = ISTATE_EOL
+    
+    # The indentation of the last non-blank, non-comment line.
+    prior_indent = 0
+
+    # The number of parens that are open in the statement.
+    open_parens = 0
+    
+    # The net change in parens on the current line.
+    net_parens = 0
+
+    # Where the current line started.
+    line_start = 0
+
+    # The quote character used to close the current string.
+    quote_char = None
+    
+    # The indentation to use if we're in a quote.
+    quote_indent = 0
+
+    while pos + 1 < len_text:
+        
+        pos += 1        
+        c = text[pos]
+        
+        if state == ISTATE_EOL:
+            line_start = pos
+            net_parens = 0
+            state = ISTATE_INDENT
+            
+        if state == ISTATE_INDENT:
+            
+            if c == " ":
+                continue
+            
+            elif c == "\n":
+                state = ISTATE_EOL
+                continue
+            
+            elif c == "#":
+                state = ISTATE_COMMENT
+                continue
+            
+            state = ISTATE_CODE
+            prior_indent = pos - line_start
+            
+            # Intentionally fall through.
+            
+        if state == ISTATE_COMMENT:
+            
+            if c == "\n":
+                state = ISTATE_EOL
+                continue
+            
+            continue
+
+        elif state == ISTATE_CODE:
+            
+            if c == "\n":
+                state = ISTATE_EOL
+                continue
+            
+            if c in "\"'`":
+                quote_char = c
+                quote_indent = 1 + pos - line_start
+                state = ISTATE_STRING
+                continue
+                
+            if c in "([{":
+                net_parens += 1
+                open_parens += 1
+                continue
+                
+            if c in ")]}":
+                net_parens -= 1
+                open_parens -= 1
+                continue
+          
+            if c == "#":
+                state = ISTATE_COMMENT
+                continue
+            
+            continue
+        
+        elif state == ISTATE_STRING:
+            
+            if c == "\\":
+                pos += 1
+                continue
+            
+            if c == quote_char:
+                state = ISTATE_CODE
+                continue
+            
+            continue
+
+    # Compute the indent of the line itself.
+    
+    INDENTWIDTH = profiler.Profile_Get("INDENTWIDTH")
+    line_indent = line_state & INDENT_MASK
+
+    if state == ISTATE_STRING:
+        indent = quote_indent
+    
+    elif open_parens <= 0:
+        if line_state & INDENTS:
+            indent = line_indent + INDENTWIDTH
+        else:
+            indent = line_indent
+ 
+    elif net_parens > 0:
+        indent = prior_indent + INDENTWIDTH
+    elif net_parens < 0:
+        indent = max(line_indent + INDENTWIDTH, prior_indent - INDENTWIDTH)
     else:
-        indent = "\n" + " " * ((state & INDENT_MASK) + 0)
-         
-    return indent
-    
+        indent = prior_indent
+      
+    # Implement the indent.
+    eolch = stc.GetEOLChar()
+    stc.AddText(eolch + " " * indent)
+      
 
 def register_syntax():
     
@@ -405,7 +541,7 @@ class SyntaxData(syntax.syndata.SyntaxDataBase):
 
         self.SetLexer(wx.stc.STC_LEX_CONTAINER)
         self.RegisterFeature(syntax.synglob.FEATURE_STYLETEXT, StyleText)
-        # self.RegisterFeature(synglob.FEATURE_AUTOINDENT, AutoIndenter)
+        self.RegisterFeature(syntax.synglob.FEATURE_AUTOINDENT, AutoIndenter)
 
     def GetKeywords(self):
         return[ ]
