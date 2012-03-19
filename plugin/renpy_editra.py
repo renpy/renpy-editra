@@ -130,6 +130,12 @@ def StyleText(stc, start, end):
 
     """
 
+    # Set up the bad indentation indicator style.
+    if stc.IndicatorGetStyle(1) != wx.stc.STC_INDIC_SQUIGGLE:
+        stc.IndicatorSetStyle(1, wx.stc.STC_INDIC_SQUIGGLE)
+        stc.IndicatorSetForeground(1, "#FF0000")
+
+
     # First, figure out the line based on the position.
     line = stc.LineFromPosition(start)
 
@@ -197,7 +203,7 @@ def StyleText(stc, start, end):
         stc.SetLineState(i, 0)
 
     new_start = stc.PositionFromLine(line)
-    stc.StartStyling(new_start, 0xff)
+    stc.StartStyling(new_start, 0xff & (~wx.stc.STC_INDIC2_MASK))
 
     text = stc.GetTextRangeUTF8(new_start, end)
     len_text = len(text)
@@ -240,7 +246,7 @@ def StyleText(stc, start, end):
         # Deal with empty blocks. Not an error, because of label.
         if block_indent is None:
             if not block_maybe_indents:
-                indent_indicator = wx.stc.STC_INDIC2_MASK                
+                indent_indicator = wx.stc.STC_INDIC1_MASK                
             block_indent, block_type = block_stack.pop()
             
         # We outdented, go out a block or more.
@@ -250,7 +256,7 @@ def StyleText(stc, start, end):
         # Now check that we match the current block.
         if indent != block_indent:
             # Indentation error.
-            indent_indicator = wx.stc.STC_INDIC2_MASK
+            indent_indicator = wx.stc.STC_INDIC1_MASK
 
         # Style the indentation.
         stc.SetStyling(indent, STC_RENPY_DEFAULT | indent_indicator)
