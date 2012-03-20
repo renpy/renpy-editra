@@ -7,7 +7,7 @@ setup(
       author = "Tom Rothamel",     # Your Name
       author_email = "pytom@bishoujo.us",  # Your contact
       license = "MIT",       # Plugins licensing info
-      py_modules = [ 'renpy_editra' ],
+      packages = [ 'renpy_editra' ],
       entry_points = '''
       [Editra.plugins]
       renpy_editra = renpy_editra:RenpyPlugin

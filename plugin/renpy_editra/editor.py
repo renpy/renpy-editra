@@ -1,38 +1,6 @@
-import plugin
 import profiler
-
 import wx.stc #@UnresolvedImport
-import time
 import re
-
-############################################################################### 
-# Dummy Plugin (So we load.)
-
-class RenpyPlugin(plugin.Plugin):
-    
-    def GetName(self):
-        return "Ren'Py Plugin (Dummy)"
-    
-
-############################################################################### 
-# Change some of the default settings in the profile.
-
-def setup_profile():
-
-    version = profiler.Profile_Get("RENPY_VERSION", default=0)
-    
-    if version < 1:    
-        profiler.Profile_Set("APPSPLASH", False)
-    
-    if version < 2:
-        profiler.Profile_Set("CHECKUPDATE", False)
-        profiler.Profile_Set("AALIASING", True)
-
-        # Set the RENPY_VERSION setting to store the version of 
-        # the Ren'Py profile in use.
-    
-        profiler.Profile_Set("RENPY_VERSION", 2)
-    
 
 ############################################################################### 
 # Create a Ren'Py Syntax.
@@ -542,7 +510,7 @@ def register_syntax():
     if ID_LANG_RENPY not in syntax.syntax.SYNTAX_IDS:
         syntax.syntax.SYNTAX_IDS.append(ID_LANG_RENPY)
 
-    syntax.synglob.LANG_MAP[LANG_RENPY] = ( ID_LANG_RENPY, "renpy_editra")
+    syntax.synglob.LANG_MAP[LANG_RENPY] = ( ID_LANG_RENPY, "renpy_editra.editor")
 
 
 class SyntaxData(syntax.syndata.SyntaxDataBase):
@@ -569,7 +537,6 @@ class SyntaxData(syntax.syndata.SyntaxDataBase):
         return [u'#']
 
 try:
-    setup_profile()
     register_syntax()
 except:
     import traceback
