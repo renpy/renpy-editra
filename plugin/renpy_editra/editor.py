@@ -2,6 +2,13 @@ import profiler
 import wx.stc #@UnresolvedImport
 import re
 
+import keywords
+import keyword
+
+RENPY_KEYWORDS = set(keywords.keywords)
+RENPY_PROPERTIES = set(keywords.properties)
+PYTHON_KEYWORDS = set(keyword.kwlist)
+
 ############################################################################### 
 # Create a Ren'Py Syntax.
 
@@ -22,7 +29,7 @@ SYNTAX_ITEMS = [
     (STC_RENPY_COMMENT, 'comment_style'),
     (STC_RENPY_STRING, 'string_style'),
     (STC_RENPY_KEYWORD, 'keyword_style'),
-    (STC_RENPY_KEYWORD, 'keyword2_style'),
+    (STC_RENPY_KEYWORD2, 'keyword2_style'),
     ]
 
 # What is the computed indentation of this line?
@@ -270,9 +277,19 @@ def StyleText(stc, start, end):
             if word:
                 line_text += word
 
-                # TODO: Decide keyword vs word.
+                style = STC_RENPY_DEFAULT
                 
-                stc.SetStyling(len(word), STC_RENPY_DEFAULT)
+                if line_type == LINE_RPY:
+                    if word in RENPY_KEYWORDS:
+                        style = STC_RENPY_KEYWORD
+                    elif word in RENPY_PROPERTIES:
+                        style = STC_RENPY_KEYWORD2
+
+                elif line_type == LINE_PY:
+                    if word in PYTHON_KEYWORDS:
+                        style = STC_RENPY_KEYWORD
+
+                stc.SetStyling(len(word), style)
                 continue
 
             comment = m.group("comment")
