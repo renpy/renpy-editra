@@ -110,13 +110,11 @@ def StyleText(stc, start, end):
         stc.IndicatorSetStyle(1, wx.stc.STC_INDIC_SQUIGGLE)
         stc.IndicatorSetForeground(1, "#FF0000")
 
-
     # A change to one line can change others below it. So we restyle all 
     # visible text with any change.        
     vis_end_line = stc.GetLastVisibleLine()
     vis_end_pos = stc.GetLineEndPosition(vis_end_line)
     end = max(end, vis_end_pos)
-
 
     # First, figure out the line based on the position.
     line = stc.LineFromPosition(start)
@@ -185,11 +183,11 @@ def StyleText(stc, start, end):
         stc.SetLineState(i, 0)
 
     new_start = stc.PositionFromLine(line)
-    stc.StartStyling(new_start, 0xff & (~wx.stc.STC_INDIC2_MASK))
-
     text = stc.GetTextRangeUTF8(new_start, end)
     len_text = len(text)
     pos = 0
+
+    stc.StartStyling(new_start, 0xff & (~wx.stc.STC_INDIC2_MASK))
 
     while pos < len_text:
 
