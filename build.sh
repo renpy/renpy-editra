@@ -41,4 +41,4 @@ zip -9r "editra-win32-$VERSION-$REV.zip" "editra-win32-$VERSION-$REV"
 rm -f "editra-mac-$VERSION-$REV.zip"
 zip -9r "editra-mac-$VERSION-$REV.zip" "Editra.app"
 
-tar cvjf "editra-linux-$VERSION-$REV.tar.bzw" "editra-linux-$VERSION-$REV"
+tar cvjf "editra-linux-$VERSION-$REV.tar.bz2" "editra-linux-$VERSION-$REV"
