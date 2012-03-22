@@ -8,6 +8,7 @@ setup(
       author_email = "pytom@bishoujo.us",  # Your contact
       license = "MIT",       # Plugins licensing info
       packages = [ 'renpy_editra', 'json' ],
+      zip_safe = False,
       entry_points = '''
       [Editra.plugins]
       renpy_editra = renpy_editra:RenpyPlugin

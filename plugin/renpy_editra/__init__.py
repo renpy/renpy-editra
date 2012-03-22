@@ -13,3 +13,4 @@ class RenpyPlugin(plugin.Plugin):
 
 import profile
 import editor
+import daemon

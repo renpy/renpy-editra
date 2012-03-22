@@ -111,8 +111,13 @@ def StyleText(stc, start, end):
         stc.IndicatorSetForeground(1, "#FF0000")
 
     # A change to one line can change others below it. So we restyle all 
-    # visible text with any change.        
-    vis_end_line = stc.GetLastVisibleLine()
+    # visible text with any change.
+    try:        
+        vis_end_line = stc.GetLastVisibleLine()
+    except:
+        # Fails if we're in the preview.
+        vis_end_line = stc.GetLineCount()
+        
     vis_end_pos = stc.GetLineEndPosition(vis_end_line)
     end = max(end, vis_end_pos)
 

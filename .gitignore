@@ -4,4 +4,8 @@ plugin/renpy_editra.egg-info
 .pydevproject
 .settings
 *.pyc
+.DS_Store
+dist
+plugin/build
+plugin/dist
 
