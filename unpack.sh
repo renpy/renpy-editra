@@ -17,3 +17,4 @@ try cd ..
 
 try ln -s ../../RenPy.ess Editra/styles/RenPy.ess
 try ln -s "../../../ren'py.rpy" "Editra/tests/syntax/ren'py.rpy"
+try ln -s ../Editra.edit.py Editra/Editra.edit.py
