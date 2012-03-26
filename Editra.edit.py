@@ -68,11 +68,11 @@ class Editor(renpy.editor.Editor):
         DIR = os.path.abspath(os.path.dirname(__file__))
 
         if renpy.linux:
-            subprocess.Popen([ os.path.join(DIR, "editra") ])
+            subprocess.Popen([ os.path.join(DIR, "Editra/editra") ])
         elif renpy.linux:
-            subprocess.Popen([ os.path.join(DIR, "Editra.exe") ])
+            subprocess.Popen([ os.path.join(DIR, "Editra-win32/Editra.exe") ])
         elif renpy.macintosh:
-            subprocess.Popen([ os.path.join(DIR, "Editra.app") ])
+            subprocess.Popen([ "open", "-a", os.path.join(DIR, "Editra-mac.app") ])
 
     def end(self, **kwargs):
         if self.send_command():

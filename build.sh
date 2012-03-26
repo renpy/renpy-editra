@@ -3,7 +3,7 @@
 try () { "$@" || exit 1; }
 
 VERSION="0.6.99"
-REV="1"
+REV="2"
 
 setup () {
     try cd plugin
@@ -15,30 +15,23 @@ setup () {
     try cp "ren'py.rpy" "$1/tests/syntax"
 }
 
+D="dist/editra"
 
-# Linux
-rm -Rf "dist/editra-linux-$VERSION-$REV"
-try tar xzf "raw/Editra-$VERSION.tar.gz" -C dist
-try mv "dist/Editra-$VERSION" "dist/editra-linux-$VERSION-$REV"
-setup "dist/editra-linux-$VERSION-$REV"
+rm -Rf "$D"
 
 # Windows
-rm -Rf "dist/editra-win32-$VERSION-$REV"
-try unzip -d "dist" "raw/Editra-win32.zip"
-try mv "dist/Editra" "dist/editra-win32-$VERSION-$REV"
-setup "dist/editra-win32-$VERSION-$REV"
+try unzip -d "$D" "raw/Editra-win32.zip"
+try mv "$D/Editra" "$D/Editra-win32"
+setup "$D/Editra-win32"
+
+# Linux
+try tar xzf "raw/Editra-$VERSION.tar.gz" -C "$D"
+try mv "$D/Editra-$VERSION" "$D/Editra"
+setup "$D/Editra"
 
 # Mac OS X
-rm -Rf "dist/Editra.app"
-try unzip -d "dist" "raw/Editra.app.zip"
-setup "dist/Editra.app/Contents/Resources"
+try unzip -d "$D" "raw/Editra.app.zip"
+try mv "$D/Editra.app" "$D/Editra-mac.app"
+setup "$D/Editra-mac.app/Contents/Resources"
 
-# Pack up.
-try cd dist
-rm -f "editra-win32-$VERSION-$REV.zip"
-zip -9r "editra-win32-$VERSION-$REV.zip" "editra-win32-$VERSION-$REV"
-
-rm -f "editra-mac-$VERSION-$REV.zip"
-zip -9r "editra-mac-$VERSION-$REV.zip" "Editra.app"
-
-tar cvjf "editra-linux-$VERSION-$REV.tar.bz2" "editra-linux-$VERSION-$REV"
+try cp "Editra.edit.py" "$D"
