@@ -105,19 +105,23 @@ def listener():
     A thread that listens for socket connections.
     """
     
-    s = socket.socket()
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    
     s.bind(("127.0.0.1", PORT))
-    s.listen(5)
+    s.listen(1)
+
+    try:
     
-    while True:
-        ss, _addr = s.accept()
-        
-        t = threading.Thread(target=server, args=(ss,))
-        t.daemon = True
-        t.start()
-    
+        while True:
+            ss, _addr = s.accept()
+            
+            t = threading.Thread(target=server, args=(ss,))
+            t.daemon = True
+            t.start()
+            
+    finally:
+        s.close()
+
     
 t = threading.Thread(target=listener)
 t.daemon = True
