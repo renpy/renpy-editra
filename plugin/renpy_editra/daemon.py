@@ -69,6 +69,7 @@ def process_core(d):
     # Show the first file again, to be sure it has focus.
     process_file(window, files[0])
         
+    window.Raise()
 
 def process(s, f, d):
     try:

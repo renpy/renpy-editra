@@ -41,6 +41,7 @@ class Editor(renpy.editor.Editor):
             s = socket.socket()
             s.connect(("127.0.0.1", PORT))
         except socket.error:
+            s.close()
             return False
         
         f = s.makefile("w+")
@@ -85,6 +86,8 @@ class Editor(renpy.editor.Editor):
         while time.time() < deadline:
             if self.send_command():
                 return
+        
+            time.sleep(.1)
             
         raise Exception("Launching Editra failed.")
         
