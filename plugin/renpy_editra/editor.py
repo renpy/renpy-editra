@@ -102,8 +102,9 @@ def StyleText(stc, start, end):
     @param stc: Styled text control instance
     @param start: Start position
     @param end: end position
-
     """
+
+    max_styled_line = max_line_cache.get(id(stc), 0)
 
     # Set up the bad indentation indicator style.
     if stc.IndicatorGetStyle(1) != wx.stc.STC_INDIC_SQUIGGLE:
@@ -128,6 +129,10 @@ def StyleText(stc, start, end):
     while line and stc.GetLineState(line) == 0:
         line -= 1
 
+    line = min(line, max_styled_line) - 1
+    if line < 0:
+        line = 0
+
     # The indentation starting the current block. (None to indicate
     # it hasn't been set yet.)
     block_indent = 0
@@ -145,6 +150,7 @@ def StyleText(stc, start, end):
     # Find the last line before line with a 0 indent. (Or the first 
     # line if we don't have one line that.)
     base_line = line
+
     while base_line > 0:
         base_line -= 1
         
@@ -156,6 +162,9 @@ def StyleText(stc, start, end):
         indent = state & INDENT_MASK
         if indent == 0:
             break
+
+    if base_line < 0:
+        base_line = 0
     
     # Figure out what sort of block we're in, and build up the stack
     # of non-closed blocks.
@@ -184,7 +193,7 @@ def StyleText(stc, start, end):
             block_indent, block_type = block_stack.pop()
 
     # Clean out the old (no longer relevant) line states.
-    for i in range(line, max_line_cache.get(id(stc), 0) + 1):
+    for i in range(line, max_styled_line + 1):
         stc.SetLineState(i, 0)
 
     new_start = stc.PositionFromLine(line)
@@ -504,15 +513,24 @@ def AutoIndenter(stc, current_pos, indent_char):
             indent = line_indent
  
     elif net_parens > 0:
+        print "Clause a", prior_indent        
         indent = prior_indent + INDENTWIDTH
     elif net_parens < 0:
+        print "Clause b", prior_indent
         indent = max(line_indent + INDENTWIDTH, prior_indent - INDENTWIDTH)
     else:
+        print "Caluse c", prior_indent
         indent = prior_indent
       
     # Implement the indent.
-    eolch = stc.GetEOLChar()
-    stc.AddText(eolch + " " * indent)
+    eolch = stc.GetEOLChar()    
+    stc.AddText(eolch)
+
+    l = stc.GetCurrentLine()
+    stc.SetLineIndentation(l, indent)
+    stc.GotoPos(stc.GetLineIndentPosition(l))
+
+    
       
 
 def register_syntax():
