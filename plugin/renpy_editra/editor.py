@@ -416,9 +416,9 @@ def AutoIndenter(stc, current_pos, indent_char):
     # Where the current line started.
     line_start = 0
 
-    # The quote character used to close the current string.
-    quote_char = None
-    
+    # The quote characters used to close the current string.
+    quote_chars = None
+        
     # The indentation to use if we're in a quote.
     quote_indent = 0
 
@@ -465,7 +465,17 @@ def AutoIndenter(stc, current_pos, indent_char):
                 continue
             
             if c in "\"'`":
-                quote_char = c
+
+                start = text[pos:pos + 3]
+                
+                if start == "'''" or start == '"""':
+                    quote_chars = start
+                    quote_indent = pos - line_start
+                    pos += 2
+                    state = ISTATE_STRING
+                    continue
+                
+                quote_chars = c
                 quote_indent = 1 + pos - line_start
                 state = ISTATE_STRING
                 continue
@@ -491,8 +501,13 @@ def AutoIndenter(stc, current_pos, indent_char):
             if c == "\\":
                 pos += 1
                 continue
-            
-            if c == quote_char:
+
+            if c == quote_chars:
+                state = ISTATE_CODE
+                continue
+
+            if text[pos:pos + 3] == quote_chars:
+                pos += 2
                 state = ISTATE_CODE
                 continue
             
@@ -513,13 +528,10 @@ def AutoIndenter(stc, current_pos, indent_char):
             indent = line_indent
  
     elif net_parens > 0:
-        print "Clause a", prior_indent        
         indent = prior_indent + INDENTWIDTH
     elif net_parens < 0:
-        print "Clause b", prior_indent
         indent = max(line_indent + INDENTWIDTH, prior_indent - INDENTWIDTH)
     else:
-        print "Caluse c", prior_indent
         indent = prior_indent
       
     # Implement the indent.
