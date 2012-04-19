@@ -129,7 +129,7 @@ def StyleText(stc, start, end):
     while line and stc.GetLineState(line) == 0:
         line -= 1
 
-    line = min(line, max_styled_line) - 1
+    line = min(line, max_styled_line) - 60 
     if line < 0:
         line = 0
 
