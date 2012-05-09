@@ -112,9 +112,10 @@ def StyleText(stc, start, end):
         stc.IndicatorSetForeground(1, "#FF0000")
 
     # A change to one line can change others below it. So we restyle all 
-    # visible text with any change.
+    # visible text with any change. (We restyle a bit more so we don't get
+    # caught in things like triple-quoted strings.)
     try:        
-        vis_end_line = stc.GetLastVisibleLine()
+        vis_end_line = stc.GetLastVisibleLine() + 20
     except:
         # Fails if we're in the preview.
         vis_end_line = stc.GetLineCount()
@@ -125,13 +126,15 @@ def StyleText(stc, start, end):
     # First, figure out the line based on the position.
     line = stc.LineFromPosition(start)
 
+    # Jump back a bunch of lines, so that we always restyle the entire
+    # screen.
+    line = min(line - 60, max_styled_line)
+    if line < 0:
+        line = 0
+
     # Find the start of the line that's been styled before this one.
     while line and stc.GetLineState(line) == 0:
         line -= 1
-
-    line = min(line, max_styled_line) - 60 
-    if line < 0:
-        line = 0
 
     # The indentation starting the current block. (None to indicate
     # it hasn't been set yet.)
@@ -363,6 +366,9 @@ def AutoIndenter(stc, current_pos, indent_char):
     """
     Determines the indentation rule.
     
+    0) If the line is empty except for whitespace, indent to the current
+       column.
+    
     1) If all strings and parenthesis are closed, then indent based on how 
        this line has been styled.
        
@@ -388,7 +394,7 @@ def AutoIndenter(stc, current_pos, indent_char):
             break
         
         line -= 1
-        
+
     start = stc.PositionFromLine(line)
     text = stc.GetTextRangeUTF8(start, current_pos)
     
@@ -399,8 +405,9 @@ def AutoIndenter(stc, current_pos, indent_char):
     ISTATE_INDENT = 0 # Line indentation.
     ISTATE_CODE = 1 # Normal code.
     ISTATE_COMMENT = 2 # Comment. 
-    ISTATE_STRING = 3 # In a string.
-    ISTATE_EOL = 4 # At the end of the line.
+    ISTATE_COMMENT_LINE = 3 # Full-line comment.
+    ISTATE_STRING = 4 # In a string.
+    ISTATE_EOL = 5 # At the end of the line.
         
     state = ISTATE_EOL
     
@@ -442,7 +449,7 @@ def AutoIndenter(stc, current_pos, indent_char):
                 continue
             
             elif c == "#":
-                state = ISTATE_COMMENT
+                state = ISTATE_COMMENT_LINE
                 continue
             
             state = ISTATE_CODE
@@ -450,7 +457,7 @@ def AutoIndenter(stc, current_pos, indent_char):
             
             # Intentionally fall through.
             
-        if state == ISTATE_COMMENT:
+        if state == ISTATE_COMMENT or state == ISTATE_COMMENT_LINE:
             
             if c == "\n":
                 state = ISTATE_EOL
@@ -514,15 +521,26 @@ def AutoIndenter(stc, current_pos, indent_char):
             continue
 
     # Compute the indent of the line itself.
-    
     INDENTWIDTH = profiler.Profile_Get("INDENTWIDTH")
     line_indent = line_state & INDENT_MASK
-
+  
     if state == ISTATE_STRING:
         indent = quote_indent
-    
+
+    elif state == ISTATE_COMMENT_LINE:
+        l = stc.GetCurrentLine()
+        indent = stc.GetLineIndentation(l)
+
     elif open_parens <= 0:
-        if line_state & INDENTS:
+        if state == ISTATE_INDENT or state == ISTATE_EOL:
+            l = stc.GetCurrentLine()
+                        
+            if stc.GetLineIndentPosition(l) == stc.GetLineEndPosition(l):
+                indent = stc.GetColumn(current_pos)
+            else:
+                indent = line_indent
+                
+        elif line_state & INDENTS:
             indent = line_indent + INDENTWIDTH
         else:
             indent = line_indent
@@ -541,8 +559,6 @@ def AutoIndenter(stc, current_pos, indent_char):
     l = stc.GetCurrentLine()
     stc.SetLineIndentation(l, indent)
     stc.GotoPos(stc.GetLineIndentPosition(l))
-
-    
       
 
 def register_syntax():
