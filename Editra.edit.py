@@ -68,12 +68,30 @@ class Editor(renpy.editor.Editor):
 
         DIR = os.path.abspath(os.path.dirname(__file__))
 
+        env = dict(os.environ)
+
+
+        def reset_env(name):
+            original_name = "RENPY_ORIGINAL_" + name
+            original_value = env.get(original_name, '')
+            
+            if original_value:
+                env[name] = original_value
+            else:
+                env.pop(name, None)
+
+        reset_env("PATH")
+        reset_env("PYTHONPATH")
+        reset_env("LD_LIBRARY_DEPS")
+        reset_env("DYLIB_LIBRARY_PATH")
+        reset_env("DYLD_FRAMEWORK_PATH")
+
         if renpy.linux:
-            subprocess.Popen([ os.path.join(DIR, "Editra/editra") ])
+            subprocess.Popen([ os.path.join(DIR, "Editra/editra") ], env=env)
         elif renpy.linux:
-            subprocess.Popen([ os.path.join(DIR, "Editra-win32/Editra.exe") ])
+            subprocess.Popen([ os.path.join(DIR, "Editra-win32/Editra.exe") ], env=env)
         elif renpy.macintosh:
-            subprocess.Popen([ "open", "-a", os.path.join(DIR, "Editra-mac.app") ])
+            subprocess.Popen([ "open", "-a", os.path.join(DIR, "Editra-mac.app") ], env=env)
 
     def end(self, **kwargs):
         if self.send_command():
