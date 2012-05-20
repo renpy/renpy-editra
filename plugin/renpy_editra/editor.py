@@ -97,6 +97,38 @@ renpy_python = re.compile(r'''
 # (GetMaxLineState can overreturn).
 max_line_cache = { }
 
+class StyleBuffer(object):
+    """
+    Buffers runs of styling to be applied all at once.
+    """
+    
+    def __init__(self, stc, start, bits):
+        self.stc = stc
+        self.start = start
+        self.bits = bits
+
+        self.started = False
+        self.buffer = [ ]
+
+    def style(self, length, style):
+        self.buffer.append((length, style))
+        
+    def apply(self, ):
+        
+        stc = self.stc
+        start = self.start
+        
+        if not self.started:
+            stc.StartStyling(self.start, self.bits)
+            
+        for length, style in self.buffer:
+            stc.SetStyling(length, style)
+            start += length
+
+        self.buffer = [ ]
+        self.start = start
+
+
 def StyleText(stc, start, end):
     """Style the text
     @param stc: Styled text control instance
@@ -204,7 +236,9 @@ def StyleText(stc, start, end):
     len_text = len(text)
     pos = 0
 
-    stc.StartStyling(new_start, 0xff & (~wx.stc.STC_INDIC2_MASK))
+    # stc.StartStyling(new_start, 0xff & (~wx.stc.STC_INDIC2_MASK))
+    sb = StyleBuffer(stc, new_start, 0xff & (~wx.stc.STC_INDIC2_MASK))
+
 
     while pos < len_text:
 
@@ -219,15 +253,15 @@ def StyleText(stc, start, end):
         eol = m.group('eol')
 
         if eol:
-            stc.SetStyling(indent, STC_RENPY_DEFAULT)
+            sb.style(indent, STC_RENPY_DEFAULT)
 
         # Style a line-long comment.
         if comment:
-            stc.SetStyling(len(comment), STC_RENPY_COMMENT)
+            sb.style(len(comment), STC_RENPY_COMMENT)
                     
         # If the line is empty, continue.
         if eol:
-            stc.SetStyling(len(eol), STC_RENPY_DEFAULT)
+            sb.style(len(eol), STC_RENPY_DEFAULT)
             line += 1
             continue
 
@@ -256,7 +290,7 @@ def StyleText(stc, start, end):
             indent_indicator = wx.stc.STC_INDIC1_MASK
 
         # Style the indentation.
-        stc.SetStyling(indent, STC_RENPY_DEFAULT | indent_indicator)
+        sb.style(indent, STC_RENPY_DEFAULT | indent_indicator)
 
         # Store the line type.
         line_type = block_type >> 4
@@ -282,9 +316,9 @@ def StyleText(stc, start, end):
                 while string[i] in 'ur':
                     i += 1
 
-                stc.SetStyling(i + 1, STC_RENPY_DEFAULT)
-                stc.SetStyling(len(string) - 2 - i, STC_RENPY_STRING)
-                stc.SetStyling(1, STC_RENPY_DEFAULT)
+                sb.style(i + 1, STC_RENPY_DEFAULT)
+                sb.style(len(string) - 2 - i, STC_RENPY_STRING)
+                sb.style(1, STC_RENPY_DEFAULT)
 
                 continue
 
@@ -304,18 +338,18 @@ def StyleText(stc, start, end):
                     if word in PYTHON_KEYWORDS:
                         style = STC_RENPY_KEYWORD
 
-                stc.SetStyling(len(word), style)
+                sb.style(len(word), style)
                 continue
 
             comment = m.group("comment")
             if comment:
                 # Don't include comment text in line_text.                    
-                stc.SetStyling(len(comment), STC_RENPY_COMMENT)
+                sb.style(len(comment), STC_RENPY_COMMENT)
                 continue
 
             # Style everything else.
             line_text += m.group(0)
-            stc.SetStyling(len(m.group(0)), STC_RENPY_DEFAULT)
+            sb.style(len(m.group(0)), STC_RENPY_DEFAULT)
 
             # Rules for everything else.
             if m.group("open_paren"):
@@ -359,6 +393,7 @@ def StyleText(stc, start, end):
         new_state = indent | line_type | block_type | indents
         stc.SetLineState(statement_line, new_state)
 
+    sb.apply()
     max_line_cache[id(stc)] = line
 
 
