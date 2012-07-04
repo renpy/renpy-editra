@@ -80,9 +80,7 @@ class Editor(renpy.editor.Editor):
             else:
                 env.pop(name, None)
 
-        reset_env("PATH")
-        reset_env("PYTHONPATH")
-        reset_env("LD_LIBRARY_DEPS")
+        reset_env("LD_LIBRARY_PATH")
         reset_env("DYLIB_LIBRARY_PATH")
         reset_env("DYLD_FRAMEWORK_PATH")
 

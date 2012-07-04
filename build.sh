@@ -3,7 +3,6 @@
 try () { "$@" || exit 1; }
 
 VERSION="0.6.99"
-REV="2"
 
 setup () {
     try cd plugin
