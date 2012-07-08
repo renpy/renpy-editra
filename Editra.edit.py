@@ -70,7 +70,6 @@ class Editor(renpy.editor.Editor):
 
         env = dict(os.environ)
 
-
         def reset_env(name):
             original_name = "RENPY_ORIGINAL_" + name
             original_value = env.get(original_name, '')
@@ -83,6 +82,16 @@ class Editor(renpy.editor.Editor):
         reset_env("LD_LIBRARY_PATH")
         reset_env("DYLIB_LIBRARY_PATH")
         reset_env("DYLD_FRAMEWORK_PATH")
+
+        config_dir = os.path.join(DIR, ".Editra")
+
+        if not os.path.exists(config_dir):
+            os.mkdir(config_dir)
+
+        plugin_cfg = os.path.join(config_dir, "plugin.cfg")
+        if not os.path.exists(plugin_cfg):
+            with open(plugin_cfg, "w") as f:
+                f.write("renpy_editra=True")
 
         if renpy.linux:
             subprocess.Popen([ os.path.join(DIR, "Editra/editra") ], env=env)
