@@ -123,7 +123,7 @@ def listener():
     finally:
         s.close()
 
-    
-t = threading.Thread(target=listener)
-t.daemon = True
-t.start()
+def init():
+    t = threading.Thread(target=listener)
+    t.daemon = True
+    t.start()

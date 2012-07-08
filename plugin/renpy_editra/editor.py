@@ -618,6 +618,8 @@ def register_syntax():
     # Register file extensions with extension register
     syntax.synextreg.ExtensionRegister().Associate(LANG_RENPY, EXTENSIONS)
 
+    syntax.synextreg.EXT_MAP['rpy rpym'] = LANG_RENPY
+
     # Update static syntax id list
     if ID_LANG_RENPY not in syntax.syntax.SYNTAX_IDS:
         syntax.syntax.SYNTAX_IDS.append(ID_LANG_RENPY)
@@ -648,9 +650,6 @@ class SyntaxData(syntax.syndata.SyntaxDataBase):
     def GetCommentPattern(self):
         return [u'#']
 
-try:
+def init():
     register_syntax()
-except:
-    import traceback
-    traceback.print_exc()
 
