@@ -7,9 +7,6 @@ def setup_profile():
 
     version = profiler.Profile_Get("RENPY_VERSION", default=0)
     
-    if version < 1:    
-        profiler.Profile_Set("APPSPLASH", False)
-    
     if version < 2:
         profiler.Profile_Set("CHECKUPDATE", False)
         profiler.Profile_Set("AALIASING", True)
