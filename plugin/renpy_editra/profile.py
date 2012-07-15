@@ -18,9 +18,13 @@ def setup_profile():
         profiler.Profile_Set("LEXERMENU", [ "Ren'Py" ])
         profiler.Profile_Set("DEFAULT_LEX", "Ren'Py")
 
+    if version < 5:
+
+        profiler.Profile_Set("APPSPLASH", False)
+
         # Set the RENPY_VERSION setting to store the version of 
         # the Ren'Py profile in use.
-        profiler.Profile_Set("RENPY_VERSION", 4)
+        profiler.Profile_Set("RENPY_VERSION", 5)
 
     print "Done with setup_profile."
 
