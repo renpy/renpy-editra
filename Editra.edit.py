@@ -93,12 +93,14 @@ class Editor(renpy.editor.Editor):
             with open(plugin_cfg, "w") as f:
                 f.write("renpy_editra=True")
 
-        if renpy.linux:
-            subprocess.Popen([ os.path.join(DIR, "Editra/editra") ], env=env)
-        elif renpy.linux:
-            subprocess.Popen([ os.path.join(DIR, "Editra-win32/Editra.exe") ], env=env)
+        if renpy.windows:
+            # No idea why startfile is required. I'm guessing it has something
+            # to do with one py2exe process inside another's directory. 
+            os.startfile(os.path.join(DIR, "Editra-win32/Editra.exe"))
         elif renpy.macintosh:
             subprocess.Popen([ "open", "-a", os.path.join(DIR, "Editra-mac.app") ], env=env)
+        else:
+            subprocess.Popen([ os.path.join(DIR, "Editra/editra") ], env=env)
 
     def end(self, **kwargs):
         if self.send_command():
