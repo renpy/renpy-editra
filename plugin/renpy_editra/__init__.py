@@ -1,8 +1,13 @@
+import traceback
 import plugin
 
-import profile
-import editor
-import daemon
+try:
+    import profile
+    import editor
+    import daemon
+except:
+    traceback.print_exc()
+    raise
 
 class RenpyPlugin(plugin.Plugin):
     """
@@ -11,11 +16,15 @@ class RenpyPlugin(plugin.Plugin):
     """
     
     def __init__(self, *args, **kwargs):
-        super(RenpyPlugin, self).__init__(*args, **kwargs)
-        
-        editor.init()
-        profile.init()
-        daemon.init()
+        super(RenpyPlugin, self).__init__()
+
+        try:
+            editor.init()
+            profile.init()
+            daemon.init()
+        except:
+            traceback.print_exc()
+            raise
     
     def GetName(self):
         return "Ren'Py Plugin"
