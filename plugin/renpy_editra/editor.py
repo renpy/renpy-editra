@@ -9,6 +9,9 @@ RENPY_KEYWORDS = set(keywords.keywords)
 RENPY_PROPERTIES = set(keywords.properties)
 PYTHON_KEYWORDS = set(keyword.kwlist)
 
+# Do we style indentation errors?
+INDENT_ERRORS = False
+
 ############################################################################### 
 # Create a Ren'Py Syntax.
 
@@ -280,7 +283,7 @@ def StyleText(stc, start, end):
 
         # Deal with empty blocks. Not an error, because of label.
         if block_indent is None:
-            if not block_maybe_indents:
+            if INDENT_ERRORS and not block_maybe_indents:
                 indent_indicator = wx.stc.STC_INDIC1_MASK                
             block_indent, block_type = block_stack.pop()
             
@@ -289,7 +292,7 @@ def StyleText(stc, start, end):
             block_indent, block_type = block_stack.pop() 
 
         # Now check that we match the current block.
-        if indent != block_indent:
+        if INDENT_ERRORS and indent != block_indent:
             # Indentation error.
             indent_indicator = wx.stc.STC_INDIC1_MASK
 
