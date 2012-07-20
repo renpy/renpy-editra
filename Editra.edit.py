@@ -10,12 +10,25 @@ import json
 
 PORT = 35033
 
-if "RENPY_BASE" in os.environ:
-    sys.path.insert(0, os.environ["RENPY_BASE"])
+try:
+    import renpy
+    from renpy.editor import Editor as EditorBase
 
-import renpy.editor
+except ImportError:
 
-class Editor(renpy.editor.Editor):
+    class EditorBase(object):
+        pass
+
+    class Renpy(object):
+        pass
+    
+    renpy = Renpy()
+    renpy.windows = False
+    renpy.macintosh = False
+    renpy.linux = True
+    
+
+class Editor(EditorBase):
 
     def begin(self, new_window=False, **kwargs):
         self.command = { "new_window" : new_window, "files" : [ ] }
@@ -83,7 +96,13 @@ class Editor(renpy.editor.Editor):
         reset_env("DYLIB_LIBRARY_PATH")
         reset_env("DYLD_FRAMEWORK_PATH")
 
-        config_dir = os.path.join(DIR, ".Editra")
+
+        if renpy.windows:
+            config_dir = os.path.join(DIR, "Editra-win32/.Editra")
+        elif renpy.macintosh:
+            config_dir = os.path.join(DIR, "Editra-mac.app/Contents/Resources/.Editra")
+        else:
+            config_dir = os.path.join(DIR, ".Editra")
 
         if not os.path.exists(config_dir):
             os.mkdir(config_dir)
@@ -94,8 +113,8 @@ class Editor(renpy.editor.Editor):
                 f.write("renpy_editra=True")
 
         if renpy.windows:
-            # No idea why startfile is required. I'm guessing it has something
-            # to do with one py2exe process inside another's directory. 
+            # Startfile is required since it's impossible to start Editra 
+            # otherwise. (I have no idea why - looks like a wxPython problem.)
             os.startfile(os.path.join(DIR, "Editra-win32/Editra.exe"))
         elif renpy.macintosh:
             subprocess.Popen([ "open", "-a", os.path.join(DIR, "Editra-mac.app") ], env=env)
