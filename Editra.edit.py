@@ -125,6 +125,8 @@ class Editor(EditorBase):
         if self.send_command():
             return
         
+        self.command["new_window"] = False
+        
         self.launch_editra()
         
         deadline = time.time() + 10.0
