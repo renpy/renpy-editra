@@ -28,8 +28,6 @@ def setup_profile():
         # the Ren'Py profile in use.
         profiler.Profile_Set("RENPY_VERSION", 6)
 
-    print "Done with setup_profile."
-
 def init():
     setup_profile()
 

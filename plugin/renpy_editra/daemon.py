@@ -40,10 +40,10 @@ def process_core(d):
     
     new_window = d.get("new_window", False)
     files = d.get("files", [ ])
-    
-    if not files:
-        raise Exception("Can't operate on empty file list.")
 
+    # Return if we have no files.    
+    if not files:
+        return
 
     # Find a window to show to the user.
     window = None
