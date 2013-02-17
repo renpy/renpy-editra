@@ -81,24 +81,8 @@ class Editor(EditorBase):
 
         DIR = os.path.abspath(os.path.dirname(__file__))
 
-        env = dict(os.environ)
-
-        def reset_env(name):
-            original_name = "RENPY_ORIGINAL_" + name
-            original_value = env.get(original_name, '')
-            
-            if original_value:
-                env[name] = original_value
-            else:
-                env.pop(name, None)
-
-        reset_env("LD_LIBRARY_PATH")
-        reset_env("DYLIB_LIBRARY_PATH")
-        reset_env("DYLD_FRAMEWORK_PATH")
-
-
         if renpy.windows:
-            config_dir = os.path.join(DIR, "Editra-win32/.Editra")
+            config_dir = os.path.join(DIR, ".Editra")
         elif renpy.macintosh:
             config_dir = os.path.join(DIR, "Editra-mac.app/Contents/Resources/.Editra")
         else:
@@ -113,13 +97,26 @@ class Editor(EditorBase):
                 f.write("renpy_editra=True")
 
         if renpy.windows:
-            # Startfile is required since it's impossible to start Editra 
-            # otherwise. (I have no idea why - looks like a wxPython problem.)
-            os.startfile(os.path.join(DIR, "Editra-win32/Editra.exe"))
+            
+            env=os.environ.copy()
+            path = env['PATH'].split(';')
+            print path
+            path = path[2:]
+            env['PATH'] = ';'.join(path)
+            print env['PATH']
+            print env.keys()
+            
+            subprocess.Popen([ 
+                os.path.join(DIR, "lib", "windows-i686", "pythonw.exe"),
+                "-OO",
+                os.path.join(DIR, "Editra/editra"),
+                ], cwd=DIR, env=env)
+              
         elif renpy.macintosh:
-            subprocess.Popen([ "open", "-a", os.path.join(DIR, "Editra-mac.app") ], env=env)
+            subprocess.Popen([ "open", "-a", os.path.join(DIR, "Editra-mac.app") ])
+
         else:
-            subprocess.Popen([ os.path.join(DIR, "Editra/editra") ], env=env)
+            subprocess.Popen([ os.path.join(DIR, "Editra/editra") ])
 
     def end(self, **kwargs):
         if self.send_command():

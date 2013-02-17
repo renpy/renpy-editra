@@ -1,8 +1,14 @@
 #!/bin/bash
+try () { "$@" || exit 1; }
 
-python -OO /t/ab/renpy-deps/renpython/build.py \
-  windows-i686 \
-  /t/ab/renpy/editra \
-  Editra/src/Editra.py \
-  --encodings
-  
+try python -OO /t/ab/renpy-deps/renpython/build.py \
+	windows-i686 \
+	/t/ab/editra/dist/editra \
+	Editra/src/Editra.py \
+	--encodings
+
+try python -OO /t/ab/renpy-deps/renpython/merge.py \
+  /t/ab/editra/dist/editra \
+  windows-i686
+    
+try rm -Rf /t/ab/editra/dist/editra/build
