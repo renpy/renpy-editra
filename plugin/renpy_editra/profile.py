@@ -24,9 +24,13 @@ def setup_profile():
     if version < 6:
         profiler.Profile_Set("SHOW_EDGE", False)
 
+    if version < 7:
+        profiler.Profile_Set("ENCODING", "utf-8")
+        
+
         # Set the RENPY_VERSION setting to store the version of 
         # the Ren'Py profile in use.
-        profiler.Profile_Set("RENPY_VERSION", 6)
+        profiler.Profile_Set("RENPY_VERSION", 7)
 
 def init():
     setup_profile()
