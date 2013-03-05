@@ -11,6 +11,6 @@ try python -OO /t/ab/renpy-deps/renpython/merge.py \
   /t/ab/editra/dist/editra \
   windows-i686
     
-# try rm -Rf /t/ab/editra/dist/editra/build
+try rm -Rf /t/ab/editra/dist/editra/build
 
 echo This needs to run inside the newbuild environment.
