@@ -92,19 +92,15 @@ class Editor(EditorBase):
             os.mkdir(config_dir)
 
         plugin_cfg = os.path.join(config_dir, "plugin.cfg")
+        
         if not os.path.exists(plugin_cfg):
             with open(plugin_cfg, "w") as f:
                 f.write("renpy_editra=True")
 
         if renpy.windows:
             
-            env=os.environ.copy()
-            path = env['PATH'].split(';')
-            print path
-            path = path[2:]
-            env['PATH'] = ';'.join(path)
-            print env['PATH']
-            print env.keys()
+            env = os.environ.copy()
+            env['PYENCHANT_LIBRARY_PATH'] = os.path.join(DIR, "lib", "windows-i686", "libenchant-1.dll")
             
             subprocess.Popen([ 
                 os.path.join(DIR, "lib", "windows-i686", "pythonw.exe"),

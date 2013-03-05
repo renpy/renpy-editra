@@ -32,6 +32,7 @@ try mkdir -p $D
 # Linux
 try tar xzf "raw/Editra-$VERSION.tar.gz" -C "$D"
 try mv "$D/Editra-$VERSION" "$D/Editra"
+# cp -a "Editra" "$D/Editra"
 setup "$D/Editra"
 
 # Mac OS X
