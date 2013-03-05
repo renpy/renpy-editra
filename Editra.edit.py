@@ -108,7 +108,7 @@ class Editor(EditorBase):
             
             subprocess.Popen([ 
                 os.path.join(DIR, "lib", "windows-i686", "pythonw.exe"),
-                "-OO",
+                "-EOO",
                 os.path.join(DIR, "Editra/editra"),
                 ], cwd=DIR, env=env)
               
