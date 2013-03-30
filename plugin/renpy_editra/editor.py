@@ -238,7 +238,7 @@ def StyleText(stc, start, end):
     text = stc.GetTextRangeUTF8(new_start, end)
 
     # End open strings.
-    text += "\"\"\"'''"
+    text += "\n\"\"\"'''"
     
     len_text = len(text)
     pos = 0
@@ -429,7 +429,6 @@ def AutoIndenter(stc, current_pos, indent_char):
     5) Otherwise, keep the current indentation.
     """
     
-    
     line = stc.LineFromPosition(current_pos)
 
     while line >= 0:
@@ -608,7 +607,7 @@ def AutoIndenter(stc, current_pos, indent_char):
     l = stc.GetCurrentLine()
     stc.SetLineIndentation(l, indent)
     stc.GotoPos(stc.GetLineIndentPosition(l))
-      
+    
 
 def register_syntax():
     
