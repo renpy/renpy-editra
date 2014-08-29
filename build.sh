@@ -6,9 +6,9 @@ VERSION="0.6.99"
 
 setup () {
     try cd plugin
-    export PYTHONPATH="../$1/plugins"    
+    export PYTHONPATH="../$1/plugins"
     # try python2.7 setup.py install --install-lib "../$1/plugins"
-    rm -Rf dist  
+    rm -Rf dist
     try python2.7 setup.py bdist_egg
     try python2.6 setup.py bdist_egg
     try cd ..
@@ -32,7 +32,7 @@ try mkdir -p $D
 # Linux
 try tar xzf "raw/Editra-$VERSION.tar.gz" -C "$D"
 try mv "$D/Editra-$VERSION" "$D/Editra"
-# cp -a "Editra" "$D/Editra"
+try ./edit_shebang.py "$D/Editra/editra" "$D/Editra/Editra.pyw"
 setup "$D/Editra"
 
 # Mac OS X
