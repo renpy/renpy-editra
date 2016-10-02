@@ -13,7 +13,8 @@ PORT = 35033
 try:
     import renpy
     from renpy.editor import Editor as EditorBase
-
+    from renpy.exports import fsencode
+    
 except ImportError:
 
     class EditorBase(object):
@@ -100,7 +101,7 @@ class Editor(EditorBase):
         if renpy.windows:
             
             env = os.environ.copy()
-            env['PYENCHANT_LIBRARY_PATH'] = os.path.join(DIR, "lib", "windows-i686", "libenchant-1.dll")
+            env['PYENCHANT_LIBRARY_PATH'] = fsencode(os.path.join(DIR, "lib", "windows-i686", "libenchant-1.dll"))
             
             subprocess.Popen([ 
                 os.path.join(DIR, "lib", "windows-i686", "pythonw.exe"),
@@ -109,10 +110,10 @@ class Editor(EditorBase):
                 ], cwd=DIR, env=env)
               
         elif renpy.macintosh:
-            subprocess.Popen([ "open", "-a", os.path.join(DIR, "Editra-mac.app") ])
+            subprocess.Popen([ "open", "-a", fsencode(os.path.join(DIR, "Editra-mac.app")) ])
 
         else:
-            subprocess.Popen([ os.path.join(DIR, "Editra/editra") ])
+            subprocess.Popen([ fsencode(os.path.join(DIR, "Editra/editra")) ])
 
     def end(self, **kwargs):
         if self.send_command():
