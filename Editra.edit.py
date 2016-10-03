@@ -101,7 +101,7 @@ class Editor(EditorBase):
         if renpy.windows:
             
             env = os.environ.copy()
-            env['PYENCHANT_LIBRARY_PATH'] = fsencode(os.path.join(DIR, "lib", "windows-i686", "libenchant-1.dll"))
+            env[b'PYENCHANT_LIBRARY_PATH'] = fsencode(os.path.join(DIR, "lib", "windows-i686", "libenchant-1.dll"))
             
             subprocess.Popen([ 
                 os.path.join(DIR, "lib", "windows-i686", "pythonw.exe"),
